@@ -13,11 +13,16 @@ public class GunManager : MonoBehaviour
 
     public GameObject muzzleFlash;
     public GameObject bulletCandidate;
+    public AudioSource gunShootSound;
 
     public void TryToTriggerGun()
     {
         if (shootCounter <= 0)
         {
+            gunShootSound.Stop();
+            gunShootSound.pitch = Random.Range(0.8f, 1);
+            gunShootSound.Play();
+
             this.transform.DOShakeRotation(MinimumShootPeriod * 0.8f, 3f);
 
             muzzleCounter = muzzleShowPeriod;

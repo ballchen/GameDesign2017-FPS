@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using DG.Tweening;
 
 public class PlayerController : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class PlayerController : MonoBehaviour
     public JumpSensor JumpSensor;
     public float JumpSpeed;
     public GunManager gunManager;
+    public GameUIManager uiManager;
+    public int hp = 100;
 
     // Use this for initialization
     void Start()
@@ -23,10 +26,38 @@ public class PlayerController : MonoBehaviour
         animatorController = this.GetComponent<Animator>();
     }
 
+    public void Hit(int value)
+    {
+        if (hp <= 0)
+        {
+            return;
+        }
+
+        hp -= value;
+        uiManager.SetHP(hp);
+
+        if (hp > 0)
+        {
+            uiManager.PlayHitAnimation();
+        }
+        else
+        {
+            uiManager.PlayerDiedAnimation();
+
+            rigidBody.gameObject.GetComponent<Collider>().enabled = false;
+            rigidBody.useGravity = false;
+            rigidBody.velocity = Vector3.zero;
+            this.enabled = false;
+            rotateXTransform.transform.DOLocalRotate(new Vector3(-60, 0, 0), 0.5f);
+            rotateYTransform.transform.DOLocalMoveY(-1.5f, 0.5f).SetRelative(true);
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
         Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
         if (Input.GetMouseButton(0))
         {
             gunManager.TryToTriggerGun();
@@ -75,7 +106,7 @@ public class PlayerController : MonoBehaviour
         {
             currentRotateX = -90;
         }
-        rotateXTransform.transform.localEulerAngles = new Vector3(-currentRotateX, 0, 0);
+        rotateXTransform.transform.localEulerAngles = new Vector3(currentRotateX, 0, 0);
 
     }
 }
