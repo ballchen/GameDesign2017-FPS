@@ -20,6 +20,9 @@ public class PlayerController : MonoBehaviour
     public GameUIManager uiManager;
     public int hp = 100;
 
+    public AudioSource footStepSound;
+    private bool footStepPlaying = false;
+
     // Use this for initialization
     void Start()
     {
@@ -65,6 +68,21 @@ public class PlayerController : MonoBehaviour
 
         //決定鍵盤input的結果
         Vector3 movDirection = Vector3.zero;
+        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
+        {
+            if (!footStepPlaying)
+            {
+                footStepPlaying = true;
+                footStepSound.time = 5.0f;
+                footStepSound.Play();
+            }
+            
+        } else
+        {
+            footStepPlaying = false;
+            footStepSound.Stop();
+        }
+
         if (Input.GetKey(KeyCode.W)) { movDirection.z += 1; }
         if (Input.GetKey(KeyCode.S)) { movDirection.z -= 1; }
         if (Input.GetKey(KeyCode.D)) { movDirection.x += 1; }
