@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using DG.Tweening;
+using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class PlayerController : MonoBehaviour
     public float rotateSpeed;
     public float currentRotateX = 0;
     public float MoveSpeed;
+    public int currentGun = 0;
+    public List<Transform> PlayerGuns;
     float currentSpeed = 0;
 
     public Rigidbody rigidBody;
@@ -17,6 +20,7 @@ public class PlayerController : MonoBehaviour
     public JumpSensor JumpSensor;
     public float JumpSpeed;
     public GunManager gunManager;
+    public FireGunManager FireGunManager;
     public GameUIManager uiManager;
     public int hp = 100;
 
@@ -56,14 +60,50 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void ChangeGun(int gunCode)
+    {
+        foreach(Transform gun in PlayerGuns)
+        {
+            gun.gameObject.SetActive(false);
+        }
+
+        PlayerGuns[gunCode].gameObject.SetActive(true);
+    }
+
     // Update is called once per frame
     void Update()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        if (Input.GetMouseButton(0))
+
+
+        if(Input.GetKey(KeyCode.Alpha1))
         {
-            gunManager.TryToTriggerGun();
+            currentGun = 0;
+            ChangeGun(currentGun);
+        } else if(Input.GetKey(KeyCode.Alpha2))
+        {
+            currentGun = 1;
+            ChangeGun(currentGun);
+        }
+
+        if(currentGun == 0)
+        {
+            if (Input.GetMouseButton(0))
+            {
+                gunManager.TryToTriggerGun();
+            }
+        } else if(currentGun == 1)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                FireGunManager.TriggerFireGun();
+            }
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                FireGunManager.StopFireGun();
+            }
         }
 
         //決定鍵盤input的結果

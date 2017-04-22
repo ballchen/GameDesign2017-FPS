@@ -11,6 +11,7 @@ public class MonsterSpawner : MonoBehaviour
 
     public float SpawnMonsterTime = 10;
     private float spwanCounter = 0;
+    public bool canSpawn = true;
 
     // Update is called once per frame
     void Update()
@@ -18,7 +19,7 @@ public class MonsterSpawner : MonoBehaviour
 
         spwanCounter += Time.deltaTime;
 
-        if (spwanCounter >= SpawnMonsterTime)
+        if (spwanCounter >= SpawnMonsterTime || canSpawn)
         {
             spwanCounter = 0;
 

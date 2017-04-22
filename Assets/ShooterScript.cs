@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+﻿using DG.Tweening;
 using System.Collections;
-using DG.Tweening;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class MonsterScript : MonoBehaviour
-{
+public class ShooterScript : MonoBehaviour {
 
-    private Animator animator;
+    public Animator animator;
     private float MinimumHitPeriod = 1f;
     private float HitCounter = 0;
     public float CurrentHP = 100;
@@ -29,19 +29,14 @@ public class MonsterScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        animator = this.GetComponent<Animator>();
         rigidBody = this.GetComponent<Rigidbody>();
+        FollowTarget = GameObject.FindGameObjectWithTag("Player");
     }
     void Update()
     {
 
-        if (PlayerSensor.CollisionObjects.Count > 0)
-        {
-            FollowTarget = PlayerSensor.CollisionObjects[0].gameObject;
-        }
+       
 
-
-        
 
         if (CurrentHP > 0 && HitCounter > 0)
         {
@@ -58,7 +53,8 @@ public class MonsterScript : MonoBehaviour
 
                     animator.SetFloat("HP", CurrentHP);
 
-                    if (CurrentHP <= 0) {
+                    if (CurrentHP <= 0)
+                    {
                         animator.SetTrigger("Hit");
                         BuryTheBody();
                     }
@@ -74,17 +70,6 @@ public class MonsterScript : MonoBehaviour
                     this.transform.LookAt(lookAt);
                     animator.SetBool("Run", true);
 
-
-                    if (AttackSensor.CollisionObjects.Count > 0)
-                    {
-                        animator.SetBool("Attack", true);
-                        this.GetComponent<Rigidbody>().velocity = Vector3.zero;
-                    }
-                    else
-                    {
-                        animator.SetBool("Attack", false);
-                        rigidBody.velocity = this.transform.forward * MoveSpeed;
-                    }
                 }
             }
             else
@@ -126,6 +111,4 @@ public class MonsterScript : MonoBehaviour
             });
         });
     }
-
-
 }
