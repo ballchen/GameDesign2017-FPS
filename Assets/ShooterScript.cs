@@ -6,7 +6,7 @@ using UnityEngine;
 public class ShooterScript : MonoBehaviour {
 
     public Animator animator;
-    private float MinimumHitPeriod = 1f;
+    private float MinimumHitPeriod = 0.5f;
     private float HitCounter = 0;
     public float CurrentHP = 100;
     public bool isHitByFire = false;
@@ -16,6 +16,7 @@ public class ShooterScript : MonoBehaviour {
     private Rigidbody rigidBody;
     public CollisionListScript PlayerSensor;
     public CollisionListScript AttackSensor;
+    public EnemyGunManager gunManager;
 
     public void AttackPlayer()
     {
@@ -34,10 +35,6 @@ public class ShooterScript : MonoBehaviour {
     }
     void Update()
     {
-
-       
-
-
         if (CurrentHP > 0 && HitCounter > 0)
         {
             HitCounter -= Time.deltaTime;
@@ -65,11 +62,24 @@ public class ShooterScript : MonoBehaviour {
             {
                 if (FollowTarget != null)
                 {
+                    
+                    
                     Vector3 lookAt = FollowTarget.gameObject.transform.position;
                     lookAt.y = this.gameObject.transform.position.y;
                     this.transform.LookAt(lookAt);
-                    animator.SetBool("Run", true);
+                    
+                    gunManager.TryToTriggerGun(FollowTarget);
 
+                    if (AttackSensor.CollisionObjects.Count > 0)
+                    {
+                        animator.SetBool("Run", false);
+                        this.GetComponent<Rigidbody>().velocity = Vector3.zero;
+                    }
+                    else
+                    {
+                        animator.SetBool("Run", true);
+                        rigidBody.velocity = this.transform.forward * MoveSpeed;
+                    }
                 }
             }
             else
@@ -77,6 +87,8 @@ public class ShooterScript : MonoBehaviour {
                 this.GetComponent<Rigidbody>().velocity = Vector3.zero;
             }
         }
+
+        
     }
 
     public void Hit(float value)
@@ -87,8 +99,9 @@ public class ShooterScript : MonoBehaviour {
             HitCounter = MinimumHitPeriod;
             CurrentHP -= value;
 
-            animator.SetFloat("HP", CurrentHP);
+            
             animator.SetTrigger("Hit");
+            animator.SetFloat("HP", CurrentHP);
 
             if (CurrentHP <= 0) { BuryTheBody(); }
         }
@@ -103,7 +116,7 @@ public class ShooterScript : MonoBehaviour {
     {
         this.GetComponent<Rigidbody>().useGravity = false;
         this.GetComponent<Collider>().enabled = false;
-        this.transform.DOMoveY(-0.8f, 1f).SetRelative(true).SetDelay(1).OnComplete(() =>
+        this.transform.DOMoveY(0, 1f).SetRelative(true).SetDelay(1).OnComplete(() =>
         {
             this.transform.DOMoveY(-0.8f, 1f).SetRelative(true).SetDelay(3).OnComplete(() =>
             {

@@ -27,8 +27,13 @@ public class BulletScript : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-
-        other.gameObject.SendMessage("Hit", damageValue);
+        if(other.tag == "Player")
+        {
+            other.gameObject.transform.GetChild(0).GetChild(0).SendMessage("Hit", 10);
+        } else
+        {
+            other.gameObject.SendMessage("Hit", damageValue);
+        }
 
         explosion.gameObject.transform.parent = null;
         explosion.gameObject.SetActive(true);
